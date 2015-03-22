@@ -82,52 +82,9 @@ r.connect(config.rethinkdb)
 	});
 
 // ******************************************
-//		Basic Express Setup
-// ******************************************
-
-// Create the application
-var app					= express();
-// Create a connection to the database
-app.use(createConnection);
-// Data parsing
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(multer());
-// Define main routes
-app.route('/lista/list').get(list);
-app.route('/lista/add').put(add);
-app.route('/lista/remove').post(remove);
-// Static files server
-app.use(serveStatic('./public'));
-// Close connection to the database
-app.use(closeConnection);
-
-
-// ******************************************
 //		API
 // ******************************************
 
-// ------------------------------------------
-//		Create a RethinkDB connection
-//		save @ request.rdbConn
-// ------------------------------------------
-
-var createConnection 	= function(request, res, next) {
-    r.connect(config.rethinkdb)
-		.then(function(conn) {
-            request.rdbConn = conn;
-            next();
-        })
-		.error(handleError(res))
-};
-
-// ------------------------------------------
-// 		Close the RethinkDB connection
-// ------------------------------------------
-
-var closeConnection		= function(request) {
-    request.rdbConn.close();
-}
 // ------------------------------------------
 //		Send back a 500 error
 // ------------------------------------------
@@ -145,14 +102,19 @@ var handleError			= function(res) {
 
 var list				= function(request, res, next) {
 	console.log('_____________________');
-	console.log('API - Sending all elements');
-	console.log('_____________________');
-    r.table(table).orderBy({index: "createdAt"}).run(request.rdbConn)
-	.then( function(cursor) {
-		return cursos.toArray();
-	})
-	.error(handleError(res))
-	.finally(next);
+	console.log('API - list/list');
+	
+	r.connect(config.rethinkdb)
+		.then(function(conn) {
+			r.table(table).run(conn)
+				.then( function(data) {
+					var query = data._responses[0].r;
+					res.send(query);
+					console.log('Done.');
+					console.log('_____________________');
+				})
+				.error(handleError(res))
+		});
 }
 
 // ------------------------------------------
@@ -162,19 +124,54 @@ var list				= function(request, res, next) {
 var add					= function(request, res, next) {
 	var element			= request.body;
 	console.log('_____________________');
-	console.log('API - Saving element');
+	console.log('API - list/add');
 	console.log(element);
-	console.log('_____________________');
+	
+	r.connect(config.rethinkdb)
+		.then(function(conn) {
+			r.table(table).insert(element).run(conn)
+				.then( function() {
+					console.log('Done.');
+					console.log('_____________________');
+				})
+				.error(handleError(res))
+		});
 }
 
 // ------------------------------------------
 //		Delete an element
 // ------------------------------------------
 
-var	remove				= function (request, res, next) {
+var	empty				= function (request, res, next) {
 	var element			= request.body;
 	console.log('_____________________');
-	console.log('API - Deleting element');
-	console.log(element);
-	console.log('_____________________');
+	console.log('API - list/empty');
+	
+	r.connect(config.rethinkdb)
+		.then(function(conn) {
+			r.table(table).delete({returnChanges: true}).run(conn)
+				.then( function(changes) {
+					console.log(changes);
+					console.log('Done.');
+					console.log('_____________________');
+				})
+				.error(handleError(res))
+		});
 }
+
+// ******************************************
+//		Basic Express Setup
+// ******************************************
+
+// Create the application
+var app					= express();
+// Data parsing
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(multer());
+// Define main routes
+app.route('/list/list').get(list);
+app.route('/list/add').put(add);
+app.route('/list/empty').post(empty);
+// Static files server
+app.use(serveStatic('./public'));
