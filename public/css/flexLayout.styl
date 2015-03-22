@@ -1,0 +1,62 @@
+@import 'nib'
+
+html
+	min-height 			100%
+	min-width 			100%
+	max-height 			100%
+	max-width 			100%
+	display 			flex
+
+body
+	display 			flex
+	flex 				1
+	flex-direction 		column
+	margin 				0
+	
+	header
+		display 			flex
+		flex 				1
+		justify-content 	flex-start
+		align-items 		center
+		padding-left		1%
+		color				#eee
+		background-color 	#111
+		background-image 	url("https://static.platzi.com/static/images/platzi-assets/platzi_logo_52_movil_1x.e9977b476db3.png");
+		background-repeat	no-repeat
+		background-position	99% 50%
+
+	footer
+		display 			flex
+		flex 				1
+		justify-content 	flex-end
+		align-items 		center
+		background-color 	#111
+		color				#eee
+		padding-right		1em
+
+	section
+		display 			flex
+		flex 				10
+		justify-content 	center
+		align-items 		center
+
+		article
+			display 			flex
+			justify-content 	center
+			align-items 		center
+			background-color 	#fff
+			padding				1em
+			margin				1em
+			box-shadow			0 0.1em 0.1em #777 , inset 0 0 0.1em #777
+			border-radius		0.5em
+			transition			all 0.3s
+			
+			& div
+				display 			flex
+				flex-direction		column
+				justify-content		center
+				background-color 	transparent
+			
+			
+			&:hover
+				box-shadow			0 0.2em 0.5em #555 , inset 0 0 0.1em #777

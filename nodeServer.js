@@ -2,7 +2,7 @@
 //		Import configurations
 // ******************************************
 
-var config				= require("./config.json");
+var config				= require('./config.json');
 
 // ******************************************
 //		Install NodeJS Dependencies
@@ -10,39 +10,14 @@ var config				= require("./config.json");
 
 // Express
 var express				= require('express');
+// Serve-Static 
+var serveStatic			= require('serve-static');
+// Body-Parser
+var bodyParser			= require('body-parser');
+// Multer
+var multer				= require('multer')
 // RethinkDB
 var r					= require('rethinkdb');
-
-// ******************************************
-//		Create a RethinkDB connection
-//		save @ request.rdbConn
-// ******************************************
-
-var createConnection 	= function(request, res, next) {
-    r.connect(config.rethinkdb)
-		.then(function(conn) {
-            request.rdbConn = conn;
-            next();
-        })
-		.error(handleError(res))
-};
-
-// ******************************************
-//		Start Express
-// ******************************************
-
-var startExpress		= function() {
-    app.listen(config.express.port);
-    console.log('Listening on port '+config.express.port);
-}
-
-// ******************************************
-// 		Close the RethinkDB connection
-// ******************************************
-
-var closeConnection		= function(request) {
-    request.rdbConn.close();
-}
 
 // ******************************************
 //		Initialize
@@ -51,21 +26,31 @@ var closeConnection		= function(request) {
 var table				= 'list';
 var tableIndex			= 'createdAt';
 
+var startExpress		= function() {
+    app.listen(config.express.port);
+	console.log('_____________________');
+	console.log('HTTP and API server online')
+    console.log('Listening on port '+config.express.port);
+	console.log('_____________________');
+}
+
 var initialize 			= function(conn) {
 	r.table(table).indexWait('createdAt').run(conn)
-		.then(function(err, result) {
+		.then(function(result) {
 			console.log("DB OK, starting express...");
+			console.log('_____________________');
 			startExpress();
 		})
 		.error(function(error){
-			console.log("The table is not properly initialized.");
-			console.log("Initializing table "+table);
+			console.log("The table doesn't exist.");
+			console.log("Initializing table: "+table);
 			r.tableCreate(table).run(conn)
 				.finally(function(){
-					console.log("Initializing index "+tableIndex);
+					console.log("Initializing index: "+tableIndex);
 					r.table(table).indexCreate(tableIndex).run(conn)
 						.finally(function(){
 							console.log("DB Initialized, starting express...");
+							console.log('_____________________');
 							startExpress();
 						});
 				});
@@ -74,6 +59,8 @@ var initialize 			= function(conn) {
 
 r.connect(config.rethinkdb)
 	.then(function(conn) {
+		console.log('_____________________');
+		console.log("Conection stablished");
 		console.log("Checking DB...");
 		r.dbList().run(conn)
 			.then(function(dbList){
@@ -81,7 +68,7 @@ r.connect(config.rethinkdb)
 				{
 					initialize(conn);
 				} else {
-					console.log("The DB is not initialized");
+					console.log("The DB doesn't exist.");
 					console.log("Initializing DB "+config.rethinkdb.db);
 					r.dbCreate(config.rethinkdb.db).run(conn)
 						.then(initialize(conn))
@@ -94,10 +81,32 @@ r.connect(config.rethinkdb)
 		process.exit(1);
 	});
 
+
 // ******************************************
 //		API
 // ******************************************
 
+// ------------------------------------------
+//		Create a RethinkDB connection
+//		save @ request.rdbConn
+// ------------------------------------------
+
+var createConnection 	= function(request, res, next) {
+    r.connect(config.rethinkdb)
+		.then(function(conn) {
+            request.rdbConn = conn;
+            next();
+        })
+		.error(handleError(res))
+};
+
+// ------------------------------------------
+// 		Close the RethinkDB connection
+// ------------------------------------------
+
+var closeConnection		= function(request) {
+    request.rdbConn.close();
+}
 // ------------------------------------------
 //		Send back a 500 error
 // ------------------------------------------
@@ -114,6 +123,9 @@ var handleError			= function(res) {
 // ------------------------------------------
 
 var list				= function(request, res, next) {
+	console.log('_____________________');
+	console.log('API - Sending all elements');
+	console.log('_____________________');
     r.table(table).orderBy({index: "createdAt"}).run(request.rdbConn)
 	.then( function(cursor) {
 		return cursos.toArray();
@@ -127,21 +139,11 @@ var list				= function(request, res, next) {
 // ------------------------------------------
 
 var add					= function(request, res, next) {
-    var element = request.body;
-    element.createdAt = r.now(); // Set the field `createdAt` to the current time
-
-    r.table(table).insert(element, {returnVals: true}).run(request.rdbConn, function(error, result) {
-        if (error) {
-            handleError(res, error) 
-        }
-        else if (result.inserted !== 1) {
-            handleError(res, new Error("Document was not inserted.")) 
-        }
-        else {
-            res.send(JSON.stringify(result.new_val));
-        }
-        next();
-    });
+	var element			= request.body;
+	console.log('_____________________');
+	console.log('API - Saving element');
+	console.log(element);
+	console.log('_____________________');
 }
 
 // ------------------------------------------
@@ -149,22 +151,11 @@ var add					= function(request, res, next) {
 // ------------------------------------------
 
 var	remove				= function (request, res, next) {
-    var element = request.body;
-    if ((element != null) && (element.id != null)) {
-        r.table(table).get(element.id).delete().run(request.rdbConn, function(error, result) {
-            if (error) {
-                handleError(res, error) 
-            }
-            else {
-                res.send(JSON.stringify(result));
-            }
-            next();
-        });
-    }
-    else {
-        handleError(res, new Error("The element must have a field `id`."))
-        next();
-    }
+	var element			= request.body;
+	console.log('_____________________');
+	console.log('API - Deleting element');
+	console.log(element);
+	console.log('_____________________');
 }
 
 // ******************************************
@@ -175,9 +166,15 @@ var	remove				= function (request, res, next) {
 var app					= express();
 // Create a connection to the database
 app.use(createConnection);
+// Data parsing
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(multer());
 // Define main routes
 app.route('/lista/list').get(list);
 app.route('/lista/add').put(add);
 app.route('/lista/remove').post(remove);
+// Static files server
+app.use(serveStatic('./public'));
 // Close connection to the database
 app.use(closeConnection);
