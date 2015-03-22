@@ -81,6 +81,27 @@ r.connect(config.rethinkdb)
 		process.exit(1);
 	});
 
+// ******************************************
+//		Basic Express Setup
+// ******************************************
+
+// Create the application
+var app					= express();
+// Create a connection to the database
+app.use(createConnection);
+// Data parsing
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(multer());
+// Define main routes
+app.route('/lista/list').get(list);
+app.route('/lista/add').put(add);
+app.route('/lista/remove').post(remove);
+// Static files server
+app.use(serveStatic('./public'));
+// Close connection to the database
+app.use(closeConnection);
+
 
 // ******************************************
 //		API
@@ -157,24 +178,3 @@ var	remove				= function (request, res, next) {
 	console.log(element);
 	console.log('_____________________');
 }
-
-// ******************************************
-//		Basic Express Setup
-// ******************************************
-
-// Create the application
-var app					= express();
-// Create a connection to the database
-app.use(createConnection);
-// Data parsing
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(multer());
-// Define main routes
-app.route('/lista/list').get(list);
-app.route('/lista/add').put(add);
-app.route('/lista/remove').post(remove);
-// Static files server
-app.use(serveStatic('./public'));
-// Close connection to the database
-app.use(closeConnection);
