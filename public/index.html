@@ -12,16 +12,32 @@
 
 	<section>
 		<article>
-			Tester
+			<div id="list">
+				<h3>Pasos para dominar un nuevo lenguaje de programación:</h3>
+			</div>
 		</article>
 	</section>
 	
 	<footer>
 		<small>by: <strong>César Antón Dorantes <a href="https://twitter.com/reicek" target="_blank">@reicek</a></strong></small>
 	</footer>
-	<script src="//fb.me/react-0.13.1.min.js"></script>
-	<script src="//cdn.firebase.com/js/client/2.2.2/firebase.js"></script>
-	<script src="//cdn.firebase.com/libs/reactfire/0.4.0/reactfire.min.js"></script>
 	<script src="//code.jquery.com/jquery-1.10.0.min.js"></script>
+	<script>
+		$.ajax({
+			url: "http://127.0.0.1/list/list",
+			type: "get"
+		})
+		.done(function(res){
+			console.log(res);
+			res.forEach(function(element){
+				var string	= "<p>"+element.message+"</p>";
+				$("#list").append(string);
+			});
+		})
+		.error(function(error){
+			console.log("Error");
+			console.log(error);
+		});
+	</script>
 </body>
 </html>

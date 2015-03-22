@@ -106,7 +106,7 @@ var list				= function(request, res, next) {
 	
 	r.connect(config.rethinkdb)
 		.then(function(conn) {
-			r.table(table).run(conn)
+			r.table(table).orderBy({index: "createdAt"}).run(conn)
 				.then( function(data) {
 					var query = data._responses[0].r;
 					res.send(query);
@@ -126,6 +126,7 @@ var add					= function(request, res, next) {
 	console.log('_____________________');
 	console.log('API - list/add');
 	console.log(element);
+	element.createdAt	= r.now();
 	
 	r.connect(config.rethinkdb)
 		.then(function(conn) {
