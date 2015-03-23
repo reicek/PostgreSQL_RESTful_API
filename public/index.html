@@ -12,9 +12,9 @@
 
 	<section>
 		<article>
-			<div id="list">
+			<ol id="list">
 				<h3>Pasos para dominar un nuevo lenguaje de programación:</h3>
-			</div>
+			</ol>
 		</article>
 	</section>
 	
@@ -30,7 +30,7 @@
 		.done(function(res){
 			console.log(res);
 			res.forEach(function(element){
-				var string	= "<p>"+element.message+"</p>";
+				var string	= "<li>"+element.message+"</li>";
 				$("#list").append(string);
 			});
 		})

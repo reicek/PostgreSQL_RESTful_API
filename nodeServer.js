@@ -1,3 +1,11 @@
+/**
+ * nodeServer.js - NodeJS Restful API for RethinkDB
+ * 2015, by Cesar Anton Dorantes @reicek
+ * for https://platzi.com/
+ * This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 International License. 
+ * To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/.
+ **/
+
 // ******************************************
 //		Import configurations
 // ******************************************
@@ -140,11 +148,10 @@ var add					= function(request, res, next) {
 }
 
 // ------------------------------------------
-//		Delete an element
+//		Delete all elements
 // ------------------------------------------
 
 var	empty				= function (request, res, next) {
-	var element			= request.body;
 	console.log('_____________________');
 	console.log('API - list/empty');
 	
