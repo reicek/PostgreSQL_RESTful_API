@@ -23,21 +23,56 @@
 	</footer>
 	<script src="//code.jquery.com/jquery-1.10.0.min.js"></script>
 	<script>
-		$.ajax({
-			url: "http://127.0.0.1/list/list",
-			type: "get"
-		})
-		.done(function(res){
-			console.log(res);
-			res.forEach(function(element){
-				var string	= "<li>"+element.message+"</li>";
-				$("#list").append(string);
+		"use strict";
+		var list	= function(){
+			$.ajax({
+				url: "/api/list",
+				type: "get"
+				}).done(function(res){
+					console.log(res);
+					res.forEach(function(element){
+						var string	= "<li>"+element.message+"</li>";
+						$("#list").append(string);
+					});
+				}).error(function(error){
+					console.log("Error");
+					console.log(error);
 			});
-		})
-		.error(function(error){
-			console.log("Error");
-			console.log(error);
-		});
+		};
+		var add		= function(data){
+			$.ajax({
+				url: "/api/add",
+				type: "put",
+				data: data
+				}).done(function(res){
+					console.log(res);
+					res.forEach(function(element){
+						var string	= "<li>"+element.message+"</li>";
+						$("#list").append(string);
+					});
+				}).error(function(error){
+					console.log("Error");
+					console.log(error);
+			});
+		};
+		var empty		= function(){
+			$.ajax({
+				url: "/api/empty",
+				type: "post"
+				}).done(function(res){
+					console.log(res);
+					res.forEach(function(element){
+						var string	= "<li>"+element.message+"</li>";
+						$("#list").append(string);
+					});
+				}).error(function(error){
+					console.log("Error");
+					console.log(error);
+			});
+		};
+		(function(){
+			list()
+		})()
 	</script>
 </body>
 </html>

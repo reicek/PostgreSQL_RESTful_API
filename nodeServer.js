@@ -178,8 +178,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(multer());
 // Define main routes
-app.route('/list/list').get(list);
-app.route('/list/add').put(add);
-app.route('/list/empty').post(empty);
+app.route('/api/list').get(list);
+app.route('/api/add').put(add);
+app.route('/api/empty').post(empty);
 // Static files server
 app.use(serveStatic('./public'));
