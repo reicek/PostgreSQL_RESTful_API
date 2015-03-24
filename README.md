@@ -1,3 +1,1 @@
-# RethinkDB_ReactJS-RealTime-List
-
-NodeJS RESTful API for RethinkDB
+# NodeJS RESTful API for RethinkDB
