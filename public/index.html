@@ -11,10 +11,8 @@
 	</header>
 
 	<section>
-		<article>
-			<ol id="list">
-				<h3>Pasos para dominar un nuevo lenguaje de programación:</h3>
-			</ol>
+		<article id="list">
+			<h3>cargando...</h3>
 		</article>
 	</section>
 	
@@ -22,57 +20,9 @@
 		<small>by: <strong>César Antón Dorantes <a href="https://twitter.com/reicek" target="_blank">@reicek</a></strong></small>
 	</footer>
 	<script src="//code.jquery.com/jquery-1.10.0.min.js"></script>
-	<script>
-		"use strict";
-		(function(){
-			var list	= function(){
-				$.ajax({
-					url: "/api/list",
-					type: "get"
-					}).done(function(res){
-						console.log(res);
-						res.forEach(function(element){
-							var string	= "<li>"+element.message+"</li>";
-							$("#list").append(string);
-						});
-					}).error(function(error){
-						console.log("Error");
-						console.log(error);
-				});
-			};
-			var add		= function(data){
-				$.ajax({
-					url: "/api/add",
-					type: "put",
-					data: data
-					}).done(function(res){
-						console.log(res);
-						res.forEach(function(element){
-							var string	= "<li>"+element.message+"</li>";
-							$("#list").append(string);
-						});
-					}).error(function(error){
-						console.log("Error");
-						console.log(error);
-				});
-			};
-			var empty		= function(){
-				$.ajax({
-					url: "/api/empty",
-					type: "post"
-					}).done(function(res){
-						console.log(res);
-						res.forEach(function(element){
-							var string	= "<li>"+element.message+"</li>";
-							$("#list").append(string);
-						});
-					}).error(function(error){
-						console.log("Error");
-						console.log(error);
-				});
-			};
-			list();
-		})()
-	</script>
+	<script src="//fb.me/react-0.13.1.js"></script>
+	<!-- <script src="//fb.me/JSXTransformer-0.13.1.js"></script> -->
+	<!-- <script src="jsx/reactApp.jsx" type="text/jsx"></script> -->
+	<script src="js/reactApp.js"></script>
 </body>
 </html>

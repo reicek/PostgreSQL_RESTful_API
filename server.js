@@ -25,18 +25,18 @@ var bodyParser			= require('body-parser');
 var multer				= require('multer');
 // PostgreSQL
 var massive				= require("massive");
-var connectionString	= "postgres://postgres:zero15@localhost/postgres";
-var massiveInstance		= massive.connectSync({connectionString : connectionString}) 
+var connectionString	= "postgres://"+config.postgres.user+":"+config.postgres.password+"@"+config.postgres.host+"/"+config.postgres.db;
+var massiveInstance		= massive.connectSync({connectionString : connectionString});
+var db;
 
 // ******************************************
 //		Initialize
 // ******************************************
 var app					= express();
-var table				= 'list';
-var tableIndex			= 'createdAt';
 
 var startExpress		= function() {
     app.listen(config.express.port);
+	db = app.get('db');
 	console.log('_____________________');
 	console.log('HTTP and API server online')
     console.log('Listening on port '+config.express.port);
@@ -46,7 +46,6 @@ var startExpress		= function() {
 var initialize 			= function() {
 	startExpress()
 }
-initialize()
 
 // ******************************************
 //		API
@@ -57,8 +56,9 @@ initialize()
 // ------------------------------------------
 
 var handleError			= function(res) {
-    return function(error){
-		res.send(500,{error: error.message});
+    return function(err){
+		console.log(err)
+		res.send(500,{error: err.message});
 	}
 }
 
@@ -67,38 +67,61 @@ var handleError			= function(res) {
 //		Retrieve all elements
 // ------------------------------------------
 
-var list				= function() {
+var list				= function(request, res, next) {
 	console.log('_____________________');
 	console.log('API - list/list');
-	var db = app.get('db');
-	console.log(db)
+	db.steps.findDoc(1, function(err,doc){
+		if (err) {
+			handleError(res)
+		};
+		console.log(doc);
+		res.json({ data: doc }); 
+	});
+}
+
+// ------------------------------------------
+//		Initialize demo table
+// ------------------------------------------
+
+var loadDemoData		= function(request, res, next) {
+	console.log('_____________________');
+	console.log('Initialize demo table');
+	var object = request.body.data;
+//	console.log(object)
+//	res.json({ data: object }); 
+	var newDoc = [
+		{
+			"row": "Leer la documentación"
+		},
+		{
+			"row": "Completar Tutoriales"
+		},
+		{
+			"row": "Crear un Demo"
+		},
+		{
+			"row": "Escribir sobre lo que aprendiste"
+		}
+	];
+	db.saveDoc("steps", newDoc, function(err,response){ // "steps" table is created on the fly
+		if (err) {
+			handleError(res)
+		};
+		console.log(response)
+		res.json({ data: response }); 
+	});
 }
 
 // ------------------------------------------
 //		Insert an element
 // ------------------------------------------
 
-var add					= function() {
+var add					= function(request, res, next) {
 	console.log('_____________________');
 	console.log('API - list/add');
-	console.log(element);
-}
-
-// ------------------------------------------
-//		Delete all elements
-// ------------------------------------------
-
-var	empty				= function () {
-	console.log('_____________________');
-	console.log('API - list/empty');
-}
-
-// Expose API
-module.exports = {
-  handleError : handleError,
-  list        : list,
-  add         : add,
-  empty       : empty
+	var object = request.body.data;
+	console.log(object)
+	res.json({ data: object }); 
 }
 
 // ******************************************
@@ -110,9 +133,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(multer());
 // Define main routes
 app.route('/api/list').get(list);
-app.route('/api/add').put(add);
-app.route('/api/empty').post(empty);
+app.route('/api/add').post(add);
+app.route('/api/initialize').post(loadDemoData);
 // Static files server
 app.use(serveStatic('./public'));
 // Set a reference to the massive instance on Express' app:
 app.set('db', massiveInstance);
+initialize()

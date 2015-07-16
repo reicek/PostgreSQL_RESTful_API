@@ -17,7 +17,7 @@ var downloadData = function(){
 		}.bind(instance)
 	});
 };
-var SimpleFilterableList	= React.createClass({
+var SimpleFilterableList	= React.createClass({displayName: "SimpleFilterableList",
 	componentDidMount: function() {
 		instance     = this;
 		downloadData();
@@ -71,43 +71,43 @@ var SimpleFilterableList	= React.createClass({
 	},
 	render: function(){
 		return (
-			<div>
-				<input
-					id			='userInput'
-					type		='text'	
-					placeholder	='Filtrar...'	
-					onChange	={this.updateUserInput}>
-				</input>
-				<SimpleList	
-					simpleList	={this.state.simpleList}
-					userInput	={this.state.userInput}/>
-				<input
-					id			='newElement'
-					type		='text'	
-					placeholder	='+' 			
-					onKeyPress	={this.sendNewElement}	
-					onClick		={this.favToInput}
-					className	='fav'>
-				</input>
-			</div>
+			React.createElement("div", null, 
+				React.createElement("input", {
+					id: "userInput", 
+					type: "text", 	
+					placeholder: "Filtrar...", 	
+					onChange: this.updateUserInput}
+				), 
+				React.createElement(SimpleList, {	
+					simpleList: this.state.simpleList, 
+					userInput: this.state.userInput}), 
+				React.createElement("input", {
+					id: "newElement", 
+					type: "text", 	
+					placeholder: "+", 			
+					onKeyPress: this.sendNewElement, 	
+					onClick: this.favToInput, 
+					className: "fav"}
+				)
+			)
 		);
 	}
 });
 
-var SimpleList			 	= React.createClass({
+var SimpleList			 	= React.createClass({displayName: "SimpleList",
 	render: function() {
 		return (
-			<span>
-				<p><strong>Pasos para dominar un nuevo lenguaje de programación:</strong></p>
-				<SimpleListRow 
-					simpleList={this.props.simpleList} 
-					userInput={this.props.userInput}/>
-			</span>
+			React.createElement("span", null, 
+				React.createElement("p", null, React.createElement("strong", null, "Pasos para dominar un nuevo lenguaje de programación:")), 
+				React.createElement(SimpleListRow, {
+					simpleList: this.props.simpleList, 
+					userInput: this.props.userInput})
+			)
 		);
 	}	
 });
 
-var SimpleListRow			= React.createClass({
+var SimpleListRow			= React.createClass({displayName: "SimpleListRow",
 	render: function() {
 		console.log('_________________');
 		console.log('simpleList rows props:');
@@ -115,24 +115,24 @@ var SimpleListRow			= React.createClass({
 		var rows = this.props.simpleList;
 		var userInput = this.props.userInput;
 		return (
-			<ol>
-				{rows.map(function(element){
+			React.createElement("ol", null, 
+				rows.map(function(element){
 					if (element.row){
 						if (element.row.toLowerCase().search(userInput.toLowerCase()) > -1){
 							console.log("userInput found in simpleList row: "+element.row);
 							return (
-								<li>{element.row}</li>
+								React.createElement("li", null, element.row)
 							);
 						}
 						
 					}
-				})}
-			</ol>
+				})
+			)
 		);
 	}	
 });
 
 React.render(
-	<SimpleFilterableList />,
+	React.createElement(SimpleFilterableList, null),
 	document.getElementById('list')
 )
