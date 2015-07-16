@@ -1,12 +1,40 @@
 "use strict"
 
+var socket					= null;
+
+var startSocket				= function() {
+	socket	= io(window.location.hostname);
+}
+
 var SimpleFilterableList	= React.createClass({
-	mixins: [ReactFireMixin],
 	componentDidMount: function() {
-		this.bindAsArray(new Firebase("https://platzi-realtimelist.firebaseio.com/"), "simpleList");
-		console.log('_________________');
-		console.log('Firebase array binded');
-		console.log(this);
+		startSocket();
+		var instance     = this;
+		var downloadData = function(){
+			$.ajax({
+				url: '/api/list',
+				dataType: 'json',
+				success: function(data) {
+					console.log('_________________');
+					console.log('Simple List data recieved:');
+					console.log(data);
+					instance.setState({simpleList: data});
+				}.bind(instance),
+					error: function(xhr, status, err) {
+						console.log('_________________');
+						console.log('Data error:');
+						console.error(instance.props.url, status, err.toString())
+				}.bind(instance)
+			});
+		};
+		downloadData();
+		socket.on('change', function (data) {
+			console.log('_________________');
+			console.log("Change")
+			console.log(data);
+			console.log('_________________');
+			downloadData();
+		});
 	},
 	getInitialState: function() {
         return {
@@ -35,10 +63,12 @@ var SimpleFilterableList	= React.createClass({
 			console.log('_________________');
 			console.log('Sending new element:');
 			console.log(document.getElementById('newElement').value);
-			console.log('_________________');
 			console.log('Convertig input to fav');
-			this.firebaseRefs['simpleList'].push({
-				row: document.getElementById('newElement').value
+			console.log('_________________');
+			$.ajax({
+				url: "/api/add",
+				type: "post",
+				data: {"row":document.getElementById('newElement').value}
 			});
 			document.getElementById('newElement').value 		= '';
 			document.getElementById("newElement").className		= 'fav';
@@ -71,7 +101,7 @@ var SimpleFilterableList	= React.createClass({
 	}
 });
 
-var SimpleList = React.createClass({
+var SimpleList			 	= React.createClass({
 	render: function() {
 		return (
 			<span>
@@ -84,7 +114,7 @@ var SimpleList = React.createClass({
 	}	
 });
 
-var SimpleListRow = React.createClass({
+var SimpleListRow			= React.createClass({
 	render: function() {
 		console.log('_________________');
 		console.log('simpleList rows props:');
@@ -93,13 +123,16 @@ var SimpleListRow = React.createClass({
 		var userInput = this.props.userInput;
 		return (
 			<ol>
-				{rows.map(function(element) 
-					{if (element.row.toLowerCase().search(userInput.toLowerCase()) > -1){
-						console.log('userInput found in simpleList row: '+element.row);
-						return (
-							<li>{element.row}</li>
-						);
-					};
+				{rows.map(function(element){
+					if (element.row){
+						if (element.row.toLowerCase().search(userInput.toLowerCase()) > -1){
+							console.log("userInput found in simpleList row: "+element.row);
+							return (
+								<li>{element.row}</li>
+							);
+						}
+						
+					}
 				})}
 			</ol>
 		);
