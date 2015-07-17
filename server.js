@@ -53,24 +53,6 @@ var handleError			= function(res) {
 	}
 }
 // ------------------------------------------
-//		Retrieve all elements
-// ------------------------------------------
-var list				= function(request, res, next) {
-	console.log('_____________________');
-	console.log('API - list/list');
-	if(!db.steps){
-		loadDemoData();
-		return
-	};
-	db.steps.findDoc(1, function(err,doc){
-		if (err) {
-			handleError(res)
-		};
-		console.log(doc.data);
-		res.json({ data: doc.data }); 
-	});
-}
-// ------------------------------------------
 //		Initialize demo table
 // ------------------------------------------
 var loadDemoData		= function() {
@@ -95,6 +77,24 @@ var loadDemoData		= function() {
 			handleError(res)
 		};
 		console.log(response)
+	});
+}
+// ------------------------------------------
+//		Retrieve all elements
+// ------------------------------------------
+var list				= function(request, res, next) {
+	console.log('_____________________');
+	console.log('API - list/list');
+	if(!db.steps){
+		loadDemoData();
+		return
+	};
+	db.steps.findDoc(1, function(err,doc){
+		if (err) {
+			handleError(res)
+		};
+		console.log(doc.data);
+		res.json({ data: doc.data }); 
 	});
 }
 // ------------------------------------------
