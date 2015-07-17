@@ -1,5 +1,6 @@
 "use strict"
 var instance;
+var dataArray;
 var downloadData = function(){
 	$.ajax({
 		url: '/api/list',
@@ -7,8 +8,9 @@ var downloadData = function(){
 		success: function(res) {
 			console.log('_________________');
 			console.log('Simple List data recieved:');
-			console.log(res.data);
-			instance.setState({simpleList: res.data});
+			dataArray = res.data;
+			console.log(dataArray);
+			instance.setState({simpleList: dataArray});
 		}.bind(instance),
 			error: function(xhr, status, err) {
 				console.log('_________________');
@@ -50,15 +52,15 @@ var SimpleFilterableList	= React.createClass({
 			console.log('Sending new element:');
 			console.log(document.getElementById('newElement').value);
 			document.getElementById('newElement').disabled		= true;
+			var newObject = {row:document.getElementById('newElement').value};
+			dataArray.push(newObject);
+			console.log(dataArray);
 			$.ajax({
-				url: "/api/add",
+				url: "/api/update",
 				type: "post",
-				data: {"data":document.getElementById('newElement').value}
+				data: {"data":dataArray}
 			}).done(function(response){
 //				console.log(response.data)
-				if (response.data == document.getElementById('newElement').value) {
-					console.log("Data Sent OK")
-				}
 				downloadData();
 				document.getElementById('newElement').value 		= '';
 				document.getElementById("newElement").className		= 'fav';
