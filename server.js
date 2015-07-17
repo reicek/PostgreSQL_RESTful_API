@@ -115,13 +115,13 @@ var update					= function(request, res, next) {
 //	console.log(object)
 }
 // ******************************************
-//		Basic Express Setup
+//		Express Setup
 // ******************************************
 // Data parsing
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(multer());
-// Define main routes
+// Define API routes
 app.route('/api/list').get(list);
 app.route('/api/update').post(update);
 app.route('/api/initialize').post(loadDemoData);
