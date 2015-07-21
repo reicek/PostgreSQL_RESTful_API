@@ -6,7 +6,7 @@
  * To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/.
  **/
 // ******************************************
-//		Import configurations
+//			Import configurations
 // ******************************************
 var config				= require('./config.json');
 // ******************************************
@@ -26,7 +26,7 @@ var connectionString	= "postgres://"+config.postgres.user+":"+config.postgres.pa
 var massiveInstance		= massive.connectSync({connectionString : connectionString});
 var db;
 // ******************************************
-//		Initialize
+//					Initialize
 // ******************************************
 var app					= express();
 var startExpress		= function() {
@@ -41,10 +41,10 @@ var initialize 			= function() {
 	startExpress()
 }
 // ******************************************
-//		API
+//					API
 // ******************************************
 // ------------------------------------------
-//		Send back a 500 error
+//			Send back a 500 error
 // ------------------------------------------
 var handleError			= function(res) {
     return function(err){
@@ -53,7 +53,7 @@ var handleError			= function(res) {
 	}
 }
 // ------------------------------------------
-//		Initialize demo table
+//			Initialize demo table
 // ------------------------------------------
 var loadDemoData		= function() {
 	console.log('_____________________');
@@ -80,7 +80,7 @@ var loadDemoData		= function() {
 	});
 }
 // ------------------------------------------
-//		Retrieve all elements
+//				Retrieve all elements
 // ------------------------------------------
 var list				= function(request, res, next) {
 	console.log('_____________________');
@@ -98,7 +98,7 @@ var list				= function(request, res, next) {
 	});
 }
 // ------------------------------------------
-//		Insert an element
+//	Insert an element on an existing object
 // ------------------------------------------
 var update					= function(request, res, next) {
 	console.log('_____________________');
@@ -115,7 +115,7 @@ var update					= function(request, res, next) {
 //	console.log(object)
 }
 // ******************************************
-//		Express Setup
+//				Express Setup
 // ******************************************
 // Data parsing
 app.use(bodyParser.json());
